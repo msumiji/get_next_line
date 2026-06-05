@@ -1,4 +1,16 @@
-#include <stdlib.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/05 20:10:13 by msumiji           #+#    #+#             */
+/*   Updated: 2026/06/05 20:10:30 by msumiji          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "get_next_line.h"
 
 size_t	ft_strlen(const char *s)
 {
@@ -44,4 +56,22 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	ft_memcpy(c + len1, s2, len2);
 	c[len1 + len2] = '\0';
 	return (c);
+}
+
+char	*ft_strdup(const char *src)
+{
+	char	*p;
+	int		i;
+
+	p = malloc(ft_strlen(src) + 1);
+	if (p == NULL)
+		return (NULL);
+	i = 0;
+	while (src[i] != '\0')
+	{
+		p[i] = src[i];
+		i++;
+	}
+	p[i] = '\0';
+	return (p);
 }
