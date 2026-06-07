@@ -6,7 +6,7 @@
 /*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 20:10:13 by msumiji           #+#    #+#             */
-/*   Updated: 2026/06/05 20:10:30 by msumiji          ###   ########.fr       */
+/*   Updated: 2026/06/07 19:25:27 by msumiji          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	len1;
 	size_t	len2;
 
-	if (!s1 || !s2)
+	if (!s2)
 		return (NULL);
 	len1 = ft_strlen((char *)s1);
 	len2 = ft_strlen((char *)s2);
@@ -63,6 +63,8 @@ char	*ft_strdup(const char *src)
 	char	*p;
 	int		i;
 
+	if (!src)
+		return (NULL);
 	p = malloc(ft_strlen(src) + 1);
 	if (p == NULL)
 		return (NULL);
