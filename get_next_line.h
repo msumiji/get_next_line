@@ -6,7 +6,7 @@
 /*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 20:10:44 by msumiji           #+#    #+#             */
-/*   Updated: 2026/06/07 17:28:28 by msumiji          ###   ########.fr       */
+/*   Updated: 2026/06/11 16:26:36 by msumiji          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,11 @@
 # include <stdlib.h>
 # include <stddef.h>
 # include <unistd.h>
-#include <fcntl.h>
+# include <fcntl.h>
 
 char	*get_next_line(int fd);
 
-int		readandjoin(int fd, char *buf, char *save, size_t n);
-
-char	*cutstring1(char *s);
+int		cutstring1(char *s);
 
 char	*cutstring2(char *s);
 
@@ -30,8 +28,12 @@ size_t	ft_strlen(const char *s);
 
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 
-char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strjoin(char *s1, char const *s2);
 
 char	*ft_strdup(const char *src);
+
+char	*readandsave(int fd, char *save);
+
+char	*cutstring3(char *s);
 
 #endif

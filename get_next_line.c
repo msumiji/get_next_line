@@ -6,7 +6,7 @@
 /*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/31 14:12:19 by msumiji           #+#    #+#             */
-/*   Updated: 2026/06/07 19:24:38 by msumiji          ###   ########.fr       */
+/*   Updated: 2026/06/11 17:41:10 by msumiji          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,69 +14,100 @@
 #include <stdio.h>
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 12
+# define BUFFER_SIZE 10000
 #endif
 
 char	*get_next_line(int fd)
 {
 	static char	*save;
 	char		*buf;
-	char		*buf2;
-	char		*c;
-	int			i;
+	char		*tmp;
 
-	buf = cutstring1(save);
-	if (buf)
-	{
-		save = cutstring2(save);
-		return (buf);
-	}
-	else
-	{
-		buf2 = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-		i = readandjoin(fd, buf2, save, BUFFER_SIZE);
-		while (i <= 0)
-		{
-			if(i < 0)
-				return (NULL);
-			i = readandjoin(fd, buf2, save, BUFFER_SIZE);
-		}
-		free(buf2);
-		printf("%s\n",save);
-		c = cutstring1(save);
-		save = cutstring2(save);
-		return (c);
-	}
-	i = fd;
-	return (NULL);
-}
-
-int	readandjoin(int fd, char *buf, char *save, size_t n)
-{
-	char	*c;
-	int		i;
-
-	if (read(fd, buf, n) < 0)
-		return (-1);
-	buf[n] = '\0';
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	save = readandsave(fd, save);
 	if (!save)
-		ft_memcpy(save, buf, n);
-	else
-	{
-		c = ft_strjoin(save, buf);
-		i = ft_strlen(c);
-		ft_memcpy(save, c, i + 1);
-	}
-	if (!cutstring1(save))
-	{
-		write(1, "3", 1);
-		return (0);
-	}
-	else
-		return (1);
+		return (NULL);
+	buf = cutstring3(save);
+	tmp = save;
+	save = cutstring2(save);
+	free(tmp);
+	return (buf);
 }
 
-char	*cutstring1(char *s)
+char	*readandsave(int fd, char *save)
+{
+	char	*buf2;
+	char	*tmp;
+	int		n;
+
+	buf2 = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	n = 1;
+	while (cutstring1(save) < 0)
+	{
+		n = (int)read(fd, buf2, BUFFER_SIZE);
+		if (n == 0)
+		{
+			free(buf2);
+			return (save);
+		}
+		if (n < 0)
+			return (NULL);
+		buf2[n] = '\0';
+		if (!save)
+			save = ft_strdup(buf2);
+		else
+		{
+			tmp = save;
+			save = ft_strjoin(save, buf2);
+			free(tmp);
+		}
+	}
+	free(buf2);
+	return (save);
+}
+
+int	cutstring1(char *s)
+{
+	int	i;
+
+	if (!s)
+		return (-1);
+	i = 0;
+	while (s[i] != '\0')
+	{
+		if (s[i] == '\n')
+			return (i);
+		else
+			i++;
+	}
+	return (-1);
+}
+
+char	*cutstring2(char *s)
+{
+	int		i;
+	int		j;
+	int		len;
+	char	*c;
+
+	if (!s)
+		return (NULL);
+	i = cutstring1(s);
+	if (i < 0)
+		return (NULL);
+	len = ft_strlen(s);
+	c = malloc(sizeof(char) * (len - i - 1));
+	j = 0;
+	while (j < len - i - 1)
+	{
+		c[j] = s[i + j + 1];
+		j++;
+	}
+	return (c);
+}
+
+char	*cutstring3(char *s)
 {
 	int		i;
 	char	*temp;
@@ -95,37 +126,42 @@ char	*cutstring1(char *s)
 		else
 			i++;
 	}
-	return (NULL);
+	return (temp);
 }
 
-char	*cutstring2(char *s)
+int main(void)
 {
+    int   fd;
+    char  *s;
 	int	i;
 
 	i = 0;
-	if (!s)
-		return (NULL);
-	while (s[i] != '\0')
-	{
-		if (s[i] == '\n')
-			return (&s[i + 1]);
-		else
-			i++;
-	}
-	return (s);
+    fd = open("output.txt", O_RDONLY);
+    if (fd < 0)
+    {
+        perror("open");
+        return 1;
+    }
+    while (1)
+    {
+		s = get_next_line(fd);
+		if(!s)
+			return (0);
+        printf("%s", s);
+		free(s);
+		i++;
+    }
+    close(fd);
+    return 0;
 }
+//int main(void) {
+//    char *line;
 
-int main()
-{
-    int		fd;
-	char	*line;
+//    printf("文字を入力してください（Ctrl+D で終了）:\n");
 
-	fd = open("test.txt", O_RDONLY);
-	if (fd < 0)
-		return (1);
-	line = get_next_line(fd);
-	printf("%s", line);
-	free(line);
-	close(fd);
-	return (0);
-}
+//    while ((line = get_next_line(0)) != NULL) {
+//        printf("%s", line);
+//        free(line);
+//    }
+//    return 0;
+//}
