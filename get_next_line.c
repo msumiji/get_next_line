@@ -6,7 +6,7 @@
 /*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/31 14:12:19 by msumiji           #+#    #+#             */
-/*   Updated: 2026/06/11 17:41:10 by msumiji          ###   ########.fr       */
+/*   Updated: 2026/06/11 19:33:08 by msumiji          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 10000
+# define BUFFER_SIZE 1000000
 #endif
 
 char	*get_next_line(int fd)
@@ -25,6 +25,14 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
+	if (cutstring1(save) >= 0)
+	{
+		buf = cutstring3(save);
+		tmp = save;
+		save = cutstring2(save);
+		free(tmp);
+		return (buf);
+	}
 	save = readandsave(fd, save);
 	if (!save)
 		return (NULL);
@@ -42,7 +50,6 @@ char	*readandsave(int fd, char *save)
 	int		n;
 
 	buf2 = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	n = 1;
 	while (cutstring1(save) < 0)
 	{
 		n = (int)read(fd, buf2, BUFFER_SIZE);
@@ -54,14 +61,9 @@ char	*readandsave(int fd, char *save)
 		if (n < 0)
 			return (NULL);
 		buf2[n] = '\0';
-		if (!save)
-			save = ft_strdup(buf2);
-		else
-		{
-			tmp = save;
-			save = ft_strjoin(save, buf2);
-			free(tmp);
-		}
+		tmp = save;
+		save = ft_strjoin(save, buf2);
+		free(tmp);
 	}
 	free(buf2);
 	return (save);
@@ -97,9 +99,9 @@ char	*cutstring2(char *s)
 	if (i < 0)
 		return (NULL);
 	len = ft_strlen(s);
-	c = malloc(sizeof(char) * (len - i - 1));
+	c = malloc(sizeof(char) * (len - i));
 	j = 0;
-	while (j < len - i - 1)
+	while (j < len - i)
 	{
 		c[j] = s[i + j + 1];
 		j++;
