@@ -6,7 +6,7 @@
 /*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/31 14:12:19 by msumiji           #+#    #+#             */
-/*   Updated: 2026/06/11 19:33:08 by msumiji          ###   ########.fr       */
+/*   Updated: 2026/06/14 19:59:22 by msumiji          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 1000000
+# define BUFFER_SIZE 5
 #endif
 
 char	*get_next_line(int fd)
@@ -25,21 +25,20 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (cutstring1(save) >= 0)
-	{
-		buf = cutstring3(save);
-		tmp = save;
-		save = cutstring2(save);
-		free(tmp);
-		return (buf);
-	}
 	save = readandsave(fd, save);
 	if (!save)
 		return (NULL);
 	buf = cutstring3(save);
-	tmp = save;
-	save = cutstring2(save);
-	free(tmp);
+	if (cutstring1(save) < 0)
+		save = NULL;
+	else
+	{
+		tmp = save;
+		save = cutstring2(save);
+		if (!save)
+			return (NULL);
+		free(tmp);
+	}
 	return (buf);
 }
 
@@ -50,6 +49,8 @@ char	*readandsave(int fd, char *save)
 	int		n;
 
 	buf2 = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buf2)
+		return (NULL);
 	while (cutstring1(save) < 0)
 	{
 		n = (int)read(fd, buf2, BUFFER_SIZE);
@@ -100,6 +101,8 @@ char	*cutstring2(char *s)
 		return (NULL);
 	len = ft_strlen(s);
 	c = malloc(sizeof(char) * (len - i));
+	if (!c)
+		return (NULL);
 	j = 0;
 	while (j < len - i)
 	{
@@ -138,7 +141,7 @@ int main(void)
 	int	i;
 
 	i = 0;
-    fd = open("output.txt", O_RDONLY);
+    fd = open("test.txt", O_RDONLY);
     if (fd < 0)
     {
         perror("open");
