@@ -6,7 +6,7 @@
 /*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 20:10:44 by msumiji           #+#    #+#             */
-/*   Updated: 2026/06/14 19:40:32 by msumiji          ###   ########.fr       */
+/*   Updated: 2026/06/18 16:23:54 by msumiji          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,22 @@
 
 char	*get_next_line(int fd);
 
-int		cutstring1(char *s);
+int		findnewline(char *s);
 
-char	*cutstring2(char *s);
+char	*afternewline(char *s);
 
 size_t	ft_strlen(const char *s);
 
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 
-char	*ft_strjoin(char *s1, char const *s2);
+char	*ft_strjoin(char *s1, const char *s2);
 
 char	*ft_strdup(const char *src);
 
 char	*readandsave(int fd, char *save);
 
-char	*cutstring3(char *s);
+char	*beforenewline(char *s);
+
+char	*change_null(char *s);
 
 #endif

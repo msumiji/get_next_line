@@ -6,7 +6,7 @@
 /*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/31 14:12:19 by msumiji           #+#    #+#             */
-/*   Updated: 2026/06/14 19:59:22 by msumiji          ###   ########.fr       */
+/*   Updated: 2026/06/18 16:48:40 by msumiji          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,33 @@
 #include <stdio.h>
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 5
+# define BUFFER_SIZE 1000000
 #endif
 
 char	*get_next_line(int fd)
 {
 	static char	*save;
 	char		*buf;
-	char		*tmp;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	save = readandsave(fd, save);
-	if (!save)
+	buf = beforenewline(save);
+	if (!buf)
+	{
+		free(save);
 		return (NULL);
-	buf = cutstring3(save);
-	if (cutstring1(save) < 0)
-		save = NULL;
+	}
+	if (findnewline(save) < 0)
+		save = change_null(save);
 	else
 	{
-		tmp = save;
-		save = cutstring2(save);
+		save = afternewline(save);
 		if (!save)
+		{
+			free(buf);
 			return (NULL);
-		free(tmp);
+		}
 	}
 	return (buf);
 }
@@ -45,32 +48,33 @@ char	*get_next_line(int fd)
 char	*readandsave(int fd, char *save)
 {
 	char	*buf2;
-	char	*tmp;
 	int		n;
 
 	buf2 = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buf2)
+	{
+		free(save);
 		return (NULL);
-	while (cutstring1(save) < 0)
+	}
+	while (findnewline(save) < 0)
 	{
 		n = (int)read(fd, buf2, BUFFER_SIZE);
-		if (n == 0)
+		if (n <= 0)
 		{
 			free(buf2);
-			return (save);
-		}
-		if (n < 0)
+			if (n == 0)
+				return (save);
+			free(save);
 			return (NULL);
+		}
 		buf2[n] = '\0';
-		tmp = save;
 		save = ft_strjoin(save, buf2);
-		free(tmp);
 	}
 	free(buf2);
 	return (save);
 }
 
-int	cutstring1(char *s)
+int	findnewline(char *s)
 {
 	int	i;
 
@@ -87,7 +91,7 @@ int	cutstring1(char *s)
 	return (-1);
 }
 
-char	*cutstring2(char *s)
+char	*afternewline(char *s)
 {
 	int		i;
 	int		j;
@@ -96,41 +100,43 @@ char	*cutstring2(char *s)
 
 	if (!s)
 		return (NULL);
-	i = cutstring1(s);
-	if (i < 0)
-		return (NULL);
+	i = findnewline(s);
 	len = ft_strlen(s);
 	c = malloc(sizeof(char) * (len - i));
 	if (!c)
+	{
+		free(s);
 		return (NULL);
+	}
 	j = 0;
 	while (j < len - i)
 	{
 		c[j] = s[i + j + 1];
 		j++;
 	}
+	free(s);
 	return (c);
 }
 
-char	*cutstring3(char *s)
+char	*beforenewline(char *s)
 {
 	int		i;
+	int		n;
 	char	*temp;
 
-	temp = ft_strdup(s);
+	n = findnewline(s);
+	if (n < 0)
+		return (ft_strdup((const char *)s));
+	temp = malloc(sizeof(char) * (n + 2));
 	if (!temp)
 		return (NULL);
 	i = 0;
-	while (temp[i] != '\0')
+	while (i <= n)
 	{
-		if (temp[i] == '\n')
-		{
-			temp[i + 1] = '\0';
-			return (temp);
-		}
-		else
-			i++;
+		temp[i] = s[i];
+		i++;
 	}
+	temp[i] = '\0';
 	return (temp);
 }
 
@@ -141,7 +147,7 @@ int main(void)
 	int	i;
 
 	i = 0;
-    fd = open("test.txt", O_RDONLY);
+    fd = open("test2.txt", O_RDONLY);
     if (fd < 0)
     {
         perror("open");
