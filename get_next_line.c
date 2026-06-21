@@ -6,12 +6,11 @@
 /*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/31 14:12:19 by msumiji           #+#    #+#             */
-/*   Updated: 2026/06/18 16:48:40 by msumiji          ###   ########.fr       */
+/*   Updated: 2026/06/19 14:16:57 by msumiji          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 1000000
@@ -27,10 +26,7 @@ char	*get_next_line(int fd)
 	save = readandsave(fd, save);
 	buf = beforenewline(save);
 	if (!buf)
-	{
-		free(save);
-		return (NULL);
-	}
+		return (change_null(save));
 	if (findnewline(save) < 0)
 		save = change_null(save);
 	else
@@ -52,10 +48,7 @@ char	*readandsave(int fd, char *save)
 
 	buf2 = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buf2)
-	{
-		free(save);
-		return (NULL);
-	}
+		return (change_null(save));
 	while (findnewline(save) < 0)
 	{
 		n = (int)read(fd, buf2, BUFFER_SIZE);
@@ -104,10 +97,7 @@ char	*afternewline(char *s)
 	len = ft_strlen(s);
 	c = malloc(sizeof(char) * (len - i));
 	if (!c)
-	{
-		free(s);
-		return (NULL);
-	}
+		return (change_null(s));
 	j = 0;
 	while (j < len - i)
 	{
@@ -139,32 +129,32 @@ char	*beforenewline(char *s)
 	temp[i] = '\0';
 	return (temp);
 }
+//#include <stdio.h>
+//int main(void)
+//{
+//    int   fd;
+//    char  *s;
+//	int	i;
 
-int main(void)
-{
-    int   fd;
-    char  *s;
-	int	i;
-
-	i = 0;
-    fd = open("test2.txt", O_RDONLY);
-    if (fd < 0)
-    {
-        perror("open");
-        return 1;
-    }
-    while (1)
-    {
-		s = get_next_line(fd);
-		if(!s)
-			return (0);
-        printf("%s", s);
-		free(s);
-		i++;
-    }
-    close(fd);
-    return 0;
-}
+//	i = 0;
+//    fd = open("test.txt", O_RDONLY);
+//    if (fd < 0)
+//    {
+//        perror("open");
+//        return 1;
+//    }
+//    while (1)
+//    {
+//		s = get_next_line(fd);
+//		if(!s)
+//			return (0);
+//        printf("%s", s);
+//		free(s);
+//		i++;
+//    }
+//    close(fd);
+//    return 0;
+//}
 //int main(void) {
 //    char *line;
 
