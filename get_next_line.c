@@ -6,7 +6,7 @@
 /*   By: msumiji <msumiji@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/31 14:12:19 by msumiji           #+#    #+#             */
-/*   Updated: 2026/06/19 14:16:57 by msumiji          ###   ########.fr       */
+/*   Updated: 2026/06/21 19:05:27 by msumiji          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,12 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	save = readandsave(fd, save);
+	if (!save || save[0] == '\0')
+	{
+		free(save);
+		save = NULL;
+		return (NULL);
+	}
 	buf = beforenewline(save);
 	if (!buf)
 		return (change_null(save));
@@ -33,10 +39,7 @@ char	*get_next_line(int fd)
 	{
 		save = afternewline(save);
 		if (!save)
-		{
-			free(buf);
-			return (NULL);
-		}
+			return (change_null(buf));
 	}
 	return (buf);
 }
@@ -137,7 +140,7 @@ char	*beforenewline(char *s)
 //	int	i;
 
 //	i = 0;
-//    fd = open("test.txt", O_RDONLY);
+//    fd = open("output.txt", O_RDONLY);
 //    if (fd < 0)
 //    {
 //        perror("open");
